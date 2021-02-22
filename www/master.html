@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="/mod/jQueryRotateCompressed.2.1.js"></script>
+  </head>
+  <script>
+  let audio_intersection = new Audio("/audio/I_am_at_an_intersection.mp3");
+  let audio_will_intersection = new Audio("/audio/I_will_go_to_an_intersection.mp3");
+  let audio_library = new Audio("/audio/I_arrived_at_the_library.mp3");
+  let audio_go_library = new Audio("/audio/I_am_going_to_the_library.mp3");
+  let audio_pool = new Audio("/audio/I_arrived_at_the_pool.mp3");
+  let audio_go_pool = new Audio("/audio/I_am_going_to_the_pool.mp3");
+  let audio_park = new Audio("/audio/I_arrived_at_the_park.mp3");
+  let audio_go_park = new Audio("/audio/I_am_going_to_the_park.mp3");
+  let audio_supermarket = new Audio("/audio/I_arrived_at_the_supermarket.mp3");
+  let audio_go_supermarket = new Audio("/audio/I_am_going_to_the_supermarket.mp3");
+  let audio_school = new Audio("/audio/I_arrived_at_the_school.mp3");
+  let audio_go_school = new Audio("/audio/I_am_going_to_the_school.mp3");
+  let audio_going_forward = new Audio("/audio/going_forward.mp3");
+  let audio_turning_left = new Audio("/audio/turning_left.mp3");
+  let audio_turning_right = new Audio("/audio/turning_right.mp3");
+  
+
+  let user=null;
+  let x = 8;
+  let y = 64;
+  let yunbotstate = 0;                    //代表車頭面向哪邊:0是面向右邊,1是面向前面,2是面向左邊,3是面向後面
+  let yunbotatfirst = 1;
+  let yunbotatanintersection1 = 0;        //代表車是否在左下的入口處:0是不在,1是在
+  let yunbotatanintersection2 = 0;        //代表車是否在右下的入口處:0是不在,1是在
+  let yunbotatanintersection3 = 0;        //代表車是否在左上的入口處:0是不在,1是在
+  let yunbotatanintersection4 = 0;        //代表車是否在右上的入口處:0是不在,1是在
+  let yunbotatlibrary = 0;                //代表車是否在圖書館:0是不在,1是在
+  let yunbotatpool = 0;                   //代表車是否在游泳池:0是不在,1是在
+  let yunbotatsupermarket = 0;            //代表車是否在超市:0是不在,1是在
+  let yunbotatpark = 0;                   //代表車是否在公園:0是不在,1是在
+  let yunbotatschool = 0;                 //代表車是否在學校:0是不在,1是在
+  let angle =0;
+  let anglenumber=0
+  let socket = io.connect('ws://140.125.32.126:3000');
+
+  function goforwardtointersection1_yunbotstate0() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      if(yunbotatsupermarket == 1){
+        yunbotstateloop = setInterval(function () { gotothesupermarketatanintersection3_yunbotstate1() }, 10);
+      }
+      else{
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+    }
+  }
+  function callgoforwardtointersection1_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection1_yunbotstate0() }, 10);
+  }
+  function goforwardtointersection2_yunbotstate0() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 44) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callgoforwardtointersection2_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection2_yunbotstate0() }, 10);
+  }
+
+  function turnlefttolibrary_yunbotstate1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 50) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the library";
+      audio_library.play();
+      talk("I arrived at the library")
+    }
+  }
+  function callturnlefttolibrary_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { turnlefttolibrary_yunbotstate1() }, 10);
+  }
+      
+  function goforwardtointersection3_yunbotstate1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callgoforwardtointersection3_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection3_yunbotstate1() }, 10);
+  }
+
+  function goforwardtopool_yunbotstate2y() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an pool";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtopool_yunbotstate2x) }, 10);
+        },2000)
+    }
+  }
+  function goforwardtopool_yunbotstate2x() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 15) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the pool";
+      audio_pool.play();
+      talk("I arrived at the pool")
+    }
+  }
+  function callgoforwardtopool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { goforwardtopool_yunbotstate2y() }, 10);
+  }
+  function gotothepoolatthelibrary_yunbotstate3y1() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,gotothepoolatthelibrary_yunbotstate3x1) }, 10);
+        },2000)
+      
+    }
+  }
+  function gotothepoolatthelibrary_yunbotstate3x1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 44) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothepoolatthelibrary_yunbotstate3y2) }, 10);
+        },2000)
+    }
+  }
+  function gotothepoolatthelibrary_yunbotstate3y2() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 34) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,gotothepoolatthelibrary_yunbotstate3x2) }, 10);
+        },2000)
+      
+    }
+  }
+  function gotothepoolatthelibrary_yunbotstate3x2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtopool_yunbotstate2y) }, 10);
+        },2000)
+    }
+  }
+  function callgotothepoolatthelibrary_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gotothepoolatthelibrary_yunbotstate3y1() }, 10);
+  }
+
+  function goforwardtointersection3_yunbotstate3y() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function goforwardtointersection3_yunbotstate3x() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtointersection3_yunbotstate3y) }, 10);
+        },2000)
+    }
+  }
+  function callgoforwardtointersection3_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection3_yunbotstate3x() }, 10);
+  }
+
+  function goforwardtointersection3_yunbotstate0y() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtointersection1_yunbotstate0) }, 10);
+        },2000)
+    }
+  }
+  function goforwardtointersection3_yunbotstate0x() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 7) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtointersection3_yunbotstate0y) }, 10);
+        },2000)
+    }
+  }
+  function callgoforwardtointersection3_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection3_yunbotstate0x() }, 10);
+  }
+  function gotothelibraryatthepool_yunbotstate2x1() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 7) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothelibraryatthepool_yunbotstate2y1) }, 10);
+        },2000)
+    }
+  }
+  function gotothelibraryatthepool_yunbotstate2y1() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothelibraryatthepool_yunbotstate2x2) }, 10);
+        },2000)
+    }
+  }
+  function gotothelibraryatthepool_yunbotstate2x2() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,turnlefttolibrary_yunbotstate3) }, 10);
+        },2000)
+    }
+  }
+  
+  function callgotothelibraryatthepool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gotothelibraryatthepool_yunbotstate2x1() }, 10);
+  }
+  function gototheschoolatthepool_yunbotstate2x1() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 7) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gototheschoolatthepool_yunbotstate2y1) }, 10);
+        },2000)
+    }
+  }
+  function gototheschoolatthepool_yunbotstate2y1() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gototheschoolatthepool_yunbotstate2x2) }, 10);
+        },2000)
+    }
+  }
+  function gototheschoolatthepool_yunbotstate2x2() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gototheschoolatthepool_yunbotstate2y2) }, 10);
+        },2000)
+    }
+  }
+  function gototheschoolatthepool_yunbotstate2y2() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtoschool_yunbotstate0) }, 10);
+        },2000)
+    }
+  }
+  function callgototheschoolatthepool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gototheschoolatthepool_yunbotstate2x1() }, 10);
+  }
+  function gototheparkatthepool_yunbotstate2x1() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 7) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gototheparkatthepool_yunbotstate2y1) }, 10);
+        },2000)
+    }
+  }
+  function gototheparkatthepool_yunbotstate2y1() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gototheparkatthepool_yunbotstate2x2) }, 10);
+        },2000)
+    }
+  }
+  function gototheparkatthepool_yunbotstate2x2() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gototheparkatthepool_yunbotstate2y2) }, 10);
+        },2000)
+    }
+  }
+  function gototheparkatthepool_yunbotstate2y2() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an intersection";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtopark_yunbotstate1x) }, 10);
+        },2000)
+    }
+  }
+  function callgototheparkatthepool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gototheparkatthepool_yunbotstate2x1() }, 10);
+  }
+
+  function turnlefttopool_yunbotstate0y() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,turnlefttopool_yunbotstate0x2) }, 10);
+        },2000)
+    }
+  }
+  function turnlefttopool_yunbotstate0x1() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 7) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,turnlefttopool_yunbotstate0y) }, 10);
+        },2000)
+    }
+  }
+  function turnlefttopool_yunbotstate0x2() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 15) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the pool";
+      audio_pool.play();
+      talk("I arrived at the pool")
+    }
+  }
+  function callturnlefttopool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { turnlefttopool_yunbotstate0x1() }, 10);
+  }
+
+  function turnrighttointersection4_yunbotstate0() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 44) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callturnrighttointersection4_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { turnrighttointersection4_yunbotstate0() }, 10);
+  }
+  function turnrighttointersection2_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      //document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callturnrighttointersection2_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { turnrighttointersection2_yunbotstate3() }, 10);
+  }
+  function goforwardtoschool_yunbotstate0() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 53) {
+      clearInterval(yunbotstateloop);
+      //document.getElementById("display").innerText = "I arrived at the school";
+      audio_school.play();
+      talk("I arrived at the school")
+    }
+  }
+  function callgoforwardtoschool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { goforwardtoschool_yunbotstate0() }, 10);
+  }
+  function goforwardtopark_yunbotstate1y() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the park";
+      audio_park.play();
+      talk("I arrived at the park")
+    }
+  }
+  function goforwardtopark_yunbotstate1x() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an park";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtopark_yunbotstate1y) }, 10);
+        },2000)
+    }
+  }
+  function callgoforwardtopark_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { goforwardtopark_yunbotstate1x() }, 10);
+  }
+  function gototheparkatthesupermarket_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtopark_yunbotstate1x) }, 10);
+        },2000)
+    }
+  }
+  function callgototheparkatthesupermarket_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gototheparkatthesupermarket_yunbotstate3() }, 10);
+  }
+  
+  function gotothesupermarketattheschool_yunbotstate0x() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an park";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtosupermarket_yunbotstate3y_1) }, 10);
+        },2000)
+    }
+  }
+  function callgotothesupermarketattheschool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gotothesupermarketattheschool_yunbotstate0x() }, 10);
+  }
+  function gotothepoolattheschool_yunbotstate0x1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an park";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothepoolattheschool_yunbotstate0y1) }, 10);
+        },2000)
+    }
+  }
+  function gotothepoolattheschool_yunbotstate0y1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      //document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothepoolattheschool_yunbotstate0x2) }, 10);
+        },2000)
+    }
+  }
+  function gotothepoolattheschool_yunbotstate0x2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 44) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothepoolattheschool_yunbotstate0y2) }, 10);
+        },2000)
+    }
+  }
+  function gotothepoolattheschool_yunbotstate0y2() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothepoolattheschool_yunbotstate0x3) }, 10);
+        },2000)
+    }
+  }
+  function gotothepoolattheschool_yunbotstate0x3() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtopool_yunbotstate2y) }, 10);
+        },2000)
+    }
+  }
+  
+  function callgotothepoolattheschool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gotothepoolattheschool_yunbotstate0x1() }, 10);
+  }
+  
+  function gototheschoolatthepark_yunbotstate1y1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      //document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gototheschoolatthepark_yunbotstate1x2) }, 10);
+        },2000)
+    }
+  }
+  function gototheschoolatthepark_yunbotstate1x2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 44) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gototheschoolatthepark_yunbotstate1y2) }, 10);
+        },2000)
+    }
+  }
+  function gototheschoolatthepark_yunbotstate1y2() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtoschool_yunbotstate0) }, 10);
+        },2000)
+    }
+  }
+  function callgototheschoolatthepark_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gototheschoolatthepark_yunbotstate1y1() }, 10);
+  }
+  function gotothelibraryattheschool_yunbotstate0x1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an park";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothelibraryattheschool_yunbotstate0y1) }, 10);
+        },2000)
+    }
+  }
+  function gotothelibraryattheschool_yunbotstate0y1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      //document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothelibraryattheschool_yunbotstate0x2) }, 10);
+        },2000)
+    }
+  }
+  function gotothelibraryattheschool_yunbotstate0x2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 44) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,gotothelibraryattheschool_yunbotstate0y2) }, 10);
+        },2000)
+    }
+  }
+  function gotothelibraryattheschool_yunbotstate0y2() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothelibraryattheschool_yunbotstate0x3) }, 10);
+        },2000)
+    }
+  }
+  function gotothelibraryattheschool_yunbotstate0x3() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,turnlefttolibrary_yunbotstate3) }, 10);
+        },2000)
+    }
+  }
+  
+  function callgotothelibraryattheschool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gotothelibraryattheschool_yunbotstate0x1() }, 10);
+  }
+  function goforwardtoschool_yunbotstate2y() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtoschool_yunbotstate2x) }, 10);
+        },2000)
+    }
+  }
+  function goforwardtoschool_yunbotstate2x() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 53) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the school";
+      audio_school.play();
+      talk("I arrived at the school")
+    }
+  }
+  function callgoforwardtoschool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { goforwardtoschool_yunbotstate2y() }, 10);
+  }
+  function gotothesupermarketatthepark_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothesupermarketattheschool_yunbotstate2) }, 10);
+        },2000)
+    }
+  }
+  function callgotothesupermarketatthepark_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gotothesupermarketatthepark_yunbotstate3() }, 10);
+  }
+  function gotothelibraryatthepark_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothelibraryattheschool_yunbotstate2) }, 10);
+        },2000)
+    }
+  }
+  function callgotothelibraryatthepark_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gotothelibraryatthepark_yunbotstate3() }, 10);
+  }
+  function gotothepoolatthepark_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothepoolattheschool_yunbotstate2) }, 10);
+        },2000)
+    }
+  }
+  function callgotothepoolatthepark_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gotothepoolatthepark_yunbotstate3() }, 10);
+  }
+
+  function goforwardtosupermarket_yunbotstate3y_1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      //document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtosupermarket_yunbotstate3x) }, 10);
+        },2000)
+    }
+  }
+  function goforwardtosupermarket_yunbotstate3x() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 44) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,goforwardtosupermarket_yunbotstate3y_2) }, 10);
+        },2000)
+    }
+  }
+  function goforwardtosupermarket_yunbotstate3y_2() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 20) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the supermarket";
+      audio_supermarket.play()
+      talk("I arrived at the supermarket")
+    }
+  }
+  function callgoforwardtosupermarket_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { goforwardtosupermarket_yunbotstate3y_1() }, 10);
+  }
+  function goforwardtopark_yunbotstate3y_2() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the park";
+      audio_park.play()
+      talk("I arrived at the park")
+    }
+  }
+  function goforwardtopark_yunbotstate3x() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtopark_yunbotstate3y_2) }, 10);
+        },2000)
+    }
+  }
+  function goforwardtopark_yunbotstate3y_1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtopark_yunbotstate3x) }, 10);
+        },2000)
+     
+    }
+  }
+  function callgoforwardtopark_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { goforwardtopark_yunbotstate3y_1() }, 10);
+  }
+  function gototheschoolatthesupermarket_yunbotstate1y1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gototheschoolatthesupermarket_yunbotstate1x1) }, 10);
+        },2000)
+     
+    }
+  }
+  
+  function gototheschoolatthesupermarket_yunbotstate1x1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtoschool_yunbotstate2y) }, 10);
+        },2000)
+    }
+  }
+ 
+  function callgototheschoolatthesupermarket_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gototheschoolatthesupermarket_yunbotstate1y1() }, 10);
+  }
+  function gotothepoolatthesupermarket_yunbotstate1y1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothepoolatthesupermarket_yunbotstate1x1) }, 10);
+        },2000)
+     
+    }
+  }
+  
+  function gotothepoolatthesupermarket_yunbotstate1x1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothepoolatthepark_yunbotstate3) }, 10);
+        },2000)
+    }
+  }
+ 
+  function callgotothepoolatthesupermarket_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gotothepoolatthesupermarket_yunbotstate1y1() }, 10);
+  }
+  function gotothelibraryatthesupermarket_yunbotstate1y1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 5) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothelibraryatthesupermarket_yunbotstate1x1) }, 10);
+        },2000)
+     
+    }
+  }
+  
+  function gotothelibraryatthesupermarket_yunbotstate1x1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 63) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText="I am at an super market";
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,gotothelibraryatthepark_yunbotstate3) }, 10);
+        },2000)
+    }
+  }
+ 
+  function callgotothelibraryatthesupermarket_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gotothelibraryatthesupermarket_yunbotstate1y1() }, 10);
+  }
+  function goforwardtosupermarket_yunbotstate1() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 20) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the supermarket";
+      audio_supermarket.play()
+      talk("I arrived at the supermarket")
+    }
+  }
+  function callgoforwardtosupermarket_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { goforwardtosupermarket_yunbotstate1() }, 10);
+  }
+  function goforwardtointersection4_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callgoforwardtointersection4_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection4_yunbotstate3() }, 10);
+  }
+  function goforwardtointersection2_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callgoforwardtointersection2_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection2_yunbotstate3() }, 10);
+  }
+  function turnrighttointersection3_yunbotstate2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callturnrighttointersection3_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { turnrighttointersection3_yunbotstate2() }, 10);
+  }
+  function turnlefttolibrary_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 50) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I arrived at the library";
+      audio_library.play()
+      talk("I arrived at the library")
+    }
+  }
+  function callturnlefttolibrary_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { turnlefttolibrary_yunbotstate3() }, 10);
+  }
+  function goforwardtointersection1_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callgoforwardtointersection1_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection1_yunbotstate3() }, 10);
+  }
+  function gototheschoolatthelibrary_yunbotstate3() {
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtoschool_yunbotstate0) }, 10);
+        },2000)
+      
+    }
+  }
+  function callgototheschoolatthelibrary_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gototheschoolatthelibrary_yunbotstate3() }, 10);
+  }
+  function turnrighttointersection1_yunbotstate2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callturnrighttointersection1_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { turnrighttointersection1_yunbotstate2() }, 10);
+  }
+  function goforwardtointersection2_yunbotstate2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 44) {
+      clearInterval(yunbotstateloop);
+      // document.getElementById("display").innerText = "I am at an intersection";
+      audio_intersection.play();
+      talk("I am at an intersection")
+    }
+  }
+  function callgoforwardtointersection2_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { goforwardtointersection2_yunbotstate2() }, 10);
+  }
+  function gotothesupermarketattheschool_yunbotstate2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 44) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtosupermarket_yunbotstate1 )}, 10);
+        },2000)
+    }
+  }
+  function callgotothesupermarketattheschool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gotothesupermarketattheschool_yunbotstate2() }, 10);
+  }
+  function gotothelibraryattheschool_yunbotstate2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,turnlefttolibrary_yunbotstate1 )}, 10);
+        },2000)
+    }
+  }
+  function callgotothelibraryattheschool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gotothelibraryattheschool_yunbotstate2() }, 10);
+  }
+  function gotothepoolattheschool_yunbotstate2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtopool_yunbotstate2y )}, 10);
+        },2000)
+    }
+  }
+  function callgotothepoolattheschool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gotothepoolattheschool_yunbotstate2() }, 10);
+  }
+  function gototheparkattheschool_yunbotstate2() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 44) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleadd(90,goforwardtopark_yunbotstate3y_1 )}, 10);
+        },2000)
+    }
+  }
+  function callgototheparkattheschool_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gototheparkattheschool_yunbotstate2() }, 10);
+  }
+  function gotothelibraryatfirst_yunbotstate1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { yunbot_angleless(90,turnlefttolibrary_yunbotstate1 )}, 10);
+        },2000)
+      
+      
+    }
+  }
+  function callgotothelibraryatfirst_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gotothelibraryatfirst_yunbotstate1() }, 10);
+  }
+  function gotothepoolatfirst_yunbotstate2() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtopool_yunbotstate2y) }, 10);
+      },2000)
+      
+      
+    }
+  }
+  function callgotothepoolatfirst_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gotothepoolatfirst_yunbotstate2() }, 10);
+  }
+  function gotothesupermarketatfirst_yunbotstate1() {
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 44) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtosupermarket_yunbotstate1) }, 10);
+        },2000)
+      
+      
+    }
+  }
+  function callgotothesupermarketatfirst_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gotothesupermarketatfirst_yunbotstate1() }, 10);
+  }
+  function gotothelibraryatanintersection2_yunbotstate1() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      callturnlefttolibrary_yunbotstate1()
+      
+    }
+  }
+  function callgotothelibraryatanintersection2_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gotothelibraryatanintersection2_yunbotstate1() }, 10);
+  }
+  function gotothepoolatanintersection2_yunbotstate2y() {
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 34) {
+      clearInterval(yunbotstateloop);
+      yunbotstateloop = setInterval(function () { gotothepoolatanintersection2_yunbotstate2x() }, 10);
+    }
+  }
+  function gotothepoolatanintersection2_yunbotstate2x() {
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      callgotothepoolatfirst_yunbotstate2()
+    }
+  }
+  function callgotothepoolatanintersection2_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gotothepoolatanintersection2_yunbotstate2y() }, 10);
+  }
+  function gototheschoolatanintersection3_yunbotstate0(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      callgoforwardtoschool_yunbotstate0()
+    }
+  }
+  function callgototheschoolatanintersection3_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gototheschoolatanintersection3_yunbotstate0() }, 10);
+  }
+  function gototheparkatanintersection3_yunbotstate1(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      callgoforwardtopark_yunbotstate1()
+    }
+  }
+  function callgototheparkatanintersection3_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gototheparkatanintersection3_yunbotstate1() }, 10);
+  }
+  function gotothesupermarketatanintersection3_yunbotstate1(){
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 44) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtosupermarket_yunbotstate1) }, 10);
+      },2000)
+    }
+  }
+  function callgotothesupermarketatanintersection3_yunbotstate1() {
+    yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gotothesupermarketatanintersection3_yunbotstate1) }, 10);
+  }
+  function gotothesupermarketatthelibrary_yunbotstate1(){
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 34) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      window.setTimeout(callgotothesupermarketatanintersection3_yunbotstate1,2000)
+      
+    }
+  }
+  function callgotothesupermarketatthelibrary_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gotothesupermarketatthelibrary_yunbotstate1() }, 10);
+  }
+  function gotothesupermarketatthelibrary_yunbotstate3(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,gotothesupermarketatfirst_yunbotstate1) }, 10);
+        },2000)
+      
+    }
+  }
+  function callgotothesupermarketatthelibrary_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gotothesupermarketatthelibrary_yunbotstate3() }, 10);
+  }
+  function gototheschoolatthelibrary_yunbotstate1y(){
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 34) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gototheschoolatthelibrary_yunbotstate1x) }, 10);
+      },2000)
+    }
+  }
+  function gototheschoolatthelibrary_yunbotstate1x(){
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 44) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gototheschoolatanintersection4_yunbotstate0) }, 10);
+      },2000)
+    }
+  }
+  function callgototheschoolatthelibrary_yunbotstate1(){
+    yunbotstateloop = setInterval(function () { gototheschoolatthelibrary_yunbotstate1y() }, 10);
+  }
+  function gototheparkatthelibrary_yunbotstate1y(){
+    y += -0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y < 34) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gototheparkatthelibrary_yunbotstate1x) }, 10);
+      },2000)
+    }
+  }
+  function gototheparkatthelibrary_yunbotstate1x(){
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 44) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gototheparkatanintersection4_yunbotstate1) }, 10);
+      },2000)
+    }
+  }
+  function callgototheparkatthelibrary_yunbotstate1(){
+    yunbotstateloop = setInterval(function () { gototheparkatthelibrary_yunbotstate1y() }, 10);
+  }
+  function gototheparkatthelibrary_yunbotstate3(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtopark_yunbotstate1x) }, 10);
+        },2000)
+      
+    }
+  }
+  function callgototheparkatthelibrary_yunbotstate3(){
+    yunbotstateloop = setInterval(function () { gototheparkatthelibrary_yunbotstate3() }, 10);
+  }
+  function gotothelibraryatanintersection4_yunbotstate3(){
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      callturnlefttolibrary_yunbotstate3()
+    }
+  }
+  function callgotothelibraryatanintersection4_yunbotstate3() {
+    yunbotstateloop = setInterval(function () { gotothelibraryatanintersection4_yunbotstate3() }, 10);
+  }
+  function gotothepoolatanintersection4_yunbotstate2(){
+    x += -0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x < 26) {
+      clearInterval(yunbotstateloop);
+      callgoforwardtopool_yunbotstate2()
+    }
+  }
+  function callgotothepoolatanintersection4_yunbotstate2() {
+    yunbotstateloop = setInterval(function () { gotothepoolatanintersection4_yunbotstate2() }, 10);
+  }
+  function gototheschoolatanintersection4_yunbotstate0(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtoschool_yunbotstate0) }, 10);
+      },2000)
+    }
+  }
+  function callgototheschoolatanintersection4_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gototheschoolatanintersection4_yunbotstate0() }, 10);
+  }
+  function gototheparkatanintersection4_yunbotstate1(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtopark_yunbotstate1x) }, 10);
+      },2000)
+    }
+  }
+  function callgototheparkatanintersection4_yunbotstate1() {
+    yunbotstateloop = setInterval(function () { gototheparkatanintersection4_yunbotstate1() }, 10);
+  }
+  function gotothelibraryatthepool_yunbotstate0(){
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,turnlefttolibrary_yunbotstate3) }, 10);
+      },2000)
+    }
+  }
+  function callgotothelibraryatthepool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gotothelibraryatthepool_yunbotstate0() }, 10);
+  }
+  function gotothesupermarketatthepool_yunbotstate0x(){
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gotothesupermarketatthepool_yunbotstate0y) }, 10);
+      },2000)
+    }
+  }
+  function gotothesupermarketatthepool_yunbotstate0y(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 34) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleless(90,gotothesupermarketatanintersection3_yunbotstate1) }, 10);
+      },2000)
+    }
+  }
+  function callgotothesupermarketatthepool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gotothesupermarketatthepool_yunbotstate0x() }, 10);
+  }
+  function gototheschoolatthepool_yunbotstate0x(){
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gototheschoolatthepool_yunbotstate0y) }, 10);
+      },2000)
+    }
+  }
+  function gototheschoolatthepool_yunbotstate0y(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtoschool_yunbotstate0) }, 10);
+      },2000)
+    }
+  }
+  function callgototheschoolatthepool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gototheschoolatthepool_yunbotstate0x() }, 10);
+  }
+  function gototheparkatthepool_yunbotstate0x(){
+    x += 0.1
+    document.getElementById("yunbotcar").style.left = x + "%";
+    if (x > 26) {
+      clearInterval(yunbotstateloop);
+      audio_turning_right.play();
+      talk("I am turning right now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleadd(90,gototheparkatthepool_yunbotstate0y) }, 10);
+      },2000)
+    }
+  }
+  function gototheparkatthepool_yunbotstate0y(){
+    y += 0.1
+    document.getElementById("yunbotcar").style.top = y + "%";
+    if (y > 64) {
+      clearInterval(yunbotstateloop);
+      audio_turning_left.play();
+      talk("I am turning left now")
+      setTimeout(function() {
+        yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtopark_yunbotstate1x) }, 10);
+      },2000)
+    }
+  }
+  function callgototheparkatthepool_yunbotstate0() {
+    yunbotstateloop = setInterval(function () { gototheparkatthepool_yunbotstate0x() }, 10);
+  }
+  
+  function question() {
+    let inputdom = document.getElementById("questionid").value
+    let Today=new Date()
+      $('#ID').append(`<div class="yun"><span>[${Today.getFullYear()}-${Today.getMonth()+1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}] ${user}:${inputdom}</span></div>`)
+    if (inputdom == "go forward" || inputdom == "go ahead" || inputdom == "go straight") {
+      if (yunbotatfirst == 1 && yunbotstate == 0) {            //車在起點往第一個路口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection1_yunbotstate0,2000 )
+        yunbotatanintersection1 = 1;
+        yunbotatfirst = 0;
+        yunbotstate = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 0) {   //車在第一個入口往第二個路口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection2_yunbotstate0,2000 )
+        yunbotstate = 0;
+        yunbotatanintersection1 = 0;
+        yunbotatanintersection2 = 1;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 1) {   //車在圖書館往第三個路口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection3_yunbotstate1,2000 )
+        yunbotatlibrary = 0;
+        yunbotatanintersection3 = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 1) {   //車在第三個入口往泳池走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtopool_yunbotstate2,2000 )
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection3_yunbotstate0,2000 )
+        yunbotstate = 0;
+        yunbotatpool = 0;
+        yunbotatanintersection3 = 1;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtoschool_yunbotstate0,2000 )
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtopark_yunbotstate1,2000 )
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatschool = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtosupermarket_yunbotstate3,2000 )
+        yunbotstate = 3;
+        yunbotatpark = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection4_yunbotstate3,2000 )
+        yunbotstate = 3;
+        yunbotatanintersection4 = 1;
+        yunbotatsupermarket = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection2_yunbotstate3,2000 )
+        yunbotstate = 3;
+        yunbotatanintersection2 = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callturnrighttointersection4_yunbotstate0,2000 )
+        yunbotstate = 0;
+        yunbotatanintersection4 = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 3) {   //車在圖書館往第三個路口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection1_yunbotstate3,2000 )
+        yunbotstate = 3
+        yunbotatlibrary = 0;
+        yunbotatanintersection1 = 1;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 0) {   //車在圖書館往第三個路口走
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection3_yunbotstate3,2000 )
+        yunbotstate = 3
+        yunbotatpool = 0;
+        yunbotatanintersection3 = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callturnlefttolibrary_yunbotstate3,2000 )
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callturnlefttopool_yunbotstate0,2000 )
+        yunbotstate = 0;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 1) {
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtosupermarket_yunbotstate1,2000 )
+        yunbotstate = 1;
+        yunbotatsupermarket = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 1) {
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtopark_yunbotstate3,2000 )
+        yunbotstate = 3;
+        yunbotatpark = 1;
+        yunbotatsupermarket = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 3) {
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(  callgoforwardtoschool_yunbotstate2,2000 )     
+        yunbotstate = 2;
+        yunbotatpark = 0;
+        yunbotatschool = 1;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 2) {
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callgoforwardtointersection2_yunbotstate2,2000 )
+        yunbotstate = 2;
+        yunbotatschool = 0;
+        yunbotatanintersection2 = 1;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 2) {
+        audio_going_forward.play();
+        talk("I am going forward now")
+        action = window.setTimeout(callturnrighttointersection1_yunbotstate2,2000 )
+        yunbotstate = 2;
+        yunbotatanintersection2 = 0;
+        yunbotatanintersection1 = 1;
+      }
+    }
+    else if (inputdom == "go to the library") { //車在第一個入口往圖書館
+      if (yunbotatanintersection1 == 1 && yunbotstate == 0) {
+        setTimeout(function() {
+          yunbotstateloop = setInterval(function () { yunbot_angleless(90,turnlefttolibrary_yunbotstate1 )}, 10);
+        },2000)
+        
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 0) {
+        callturnlefttolibrary_yunbotstate3()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 1) {
+        callturnlefttolibrary_yunbotstate1()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {
+        callturnlefttolibrary_yunbotstate1()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {
+        callturnlefttolibrary_yunbotstate1()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatfirst == 1 && yunbotstate == 0) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        window.setTimeout(callgotothelibraryatfirst_yunbotstate1,2000 )
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatfirst = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 2) {
+        callturnlefttolibrary_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection1 = 0;
+      }
+      
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 3) {
+        callturnlefttolibrary_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 0) {
+        callgotothelibraryatanintersection2_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 1) {
+        callgotothelibraryatanintersection2_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 2) {
+        callgotothelibraryatanintersection2_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 3) {
+        callgotothelibraryatanintersection2_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 0) {
+        callgotothelibraryatanintersection4_yunbotstate3()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 1) {
+        callgotothelibraryatanintersection4_yunbotstate3()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 2) {
+        callgotothelibraryatanintersection4_yunbotstate3()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 3) {
+        callgotothelibraryatanintersection4_yunbotstate3()
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 0) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        window.setTimeout(callgotothelibraryatthepool_yunbotstate0,2000 )
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatpool = 0;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 2) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        window.setTimeout(callgotothelibraryatthepool_yunbotstate2,2000 )
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatpool = 0;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 0) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        window.setTimeout(callgotothelibraryattheschool_yunbotstate0,2000 )
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatschool = 0;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 2) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        window.setTimeout(callgotothelibraryattheschool_yunbotstate2,2000 )
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatschool = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 1) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        setTimeout(function() {
+          yunbotstateloop = setInterval(function () { gotothelibraryattheschool_yunbotstate0y1() }, 10);
+        },2000)
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatpark = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 3) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        window.setTimeout(callgotothelibraryatthepark_yunbotstate3,2000 )
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatpark = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 1) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        window.setTimeout(callgotothelibraryatthesupermarket_yunbotstate1,2000 )
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatsupermarket = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 3) {
+        audio_go_library.play();
+        talk("I am going to the library")
+        setTimeout(function() {
+          yunbotstateloop = setInterval(function () { gotothelibraryattheschool_yunbotstate0y2() }, 10);
+        },2000)
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatsupermarket = 0;
+      }
+     
+     
+    }
+    else if (inputdom == "go to the pool") {                               //車在第三個入口往泳池走
+      if (yunbotatanintersection3 == 1 && yunbotstate == 0) {
+        callgoforwardtopool_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 1) {
+        callgoforwardtopool_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {
+        callgoforwardtopool_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {
+        callgoforwardtopool_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatfirst == 1 && yunbotstate == 0) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        window.setTimeout(callgotothepoolatfirst_yunbotstate2,2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatfirst = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 0) {
+        callgotothepoolatfirst_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 3) {
+        callgotothepoolatfirst_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 2) {
+        callgotothepoolatfirst_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 0) {
+        callgotothepoolatanintersection2_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 1) {
+        callgotothepoolatanintersection2_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 2) {
+        callgotothepoolatanintersection2_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 3) {
+        callgotothepoolatanintersection2_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 0) {
+        callgotothepoolatanintersection4_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 1) {
+        callgotothepoolatanintersection4_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 2) {
+        callgotothepoolatanintersection4_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 3) {
+        callgotothepoolatanintersection4_yunbotstate2()
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 1) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        window.setTimeout(callgoforwardtopool_yunbotstate2,2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatlibrary = 0;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 3) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        window.setTimeout(callgotothepoolatthelibrary_yunbotstate3,2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatlibrary = 0;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 0) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        window.setTimeout(callgotothepoolattheschool_yunbotstate0,2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatschool = 0;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 2) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        window.setTimeout(callgotothepoolattheschool_yunbotstate2,2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatschool = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 1) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        setTimeout(function() {
+          yunbotstateloop = setInterval(function () { gotothepoolattheschool_yunbotstate0y1() }, 10);
+        },2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatpark = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 3) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        window.setTimeout(callgotothepoolatthepark_yunbotstate3,2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatpark = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 1) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        window.setTimeout(callgotothepoolatthesupermarket_yunbotstate1,2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatsupermarket = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 3) {
+        audio_go_pool.play();
+        talk("I am going to the pool")
+        setTimeout(function() {
+          yunbotstateloop = setInterval(function () { gotothepoolattheschool_yunbotstate0y2() }, 10);
+        },2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatsupermarket = 0;
+      }
+      
+    }
+    else if (inputdom == "turn right" || inputdom == "make right turn") {                               //車在第三個入口往泳池走
+      if (yunbotatanintersection3 == 1 && yunbotstate == 1) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,turnrighttointersection4_yunbotstate0) }, 10);
+        },2000)
+        yunbotstate = 0;
+        yunbotatanintersection4 = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 0) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () {yunbot_angleadd(90,turnrighttointersection2_yunbotstate3) }, 10);
+        },2000)
+        yunbotstate = 3;
+        yunbotatanintersection4 = 0;
+        yunbotatanintersection2 = 1;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 3) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,turnrighttointersection3_yunbotstate2) }, 10);
+        },2000)
+        yunbotstate = 2;
+        yunbotatanintersection4 = 0;
+        yunbotatanintersection3 = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,goforwardtopool_yunbotstate2y) }, 10);
+        },2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 0) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,turnlefttolibrary_yunbotstate3) }, 10);
+        },2000)
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 3) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,turnrighttointersection1_yunbotstate2) }, 10);
+        },2000)
+        yunbotstate = 2;
+        yunbotatanintersection2 = 0;
+        yunbotatanintersection1 = 1;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 2) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,turnlefttolibrary_yunbotstate1) }, 10);
+        },2000)
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,turnlefttopool_yunbotstate0x1) }, 10);
+        },2000)
+        yunbotstate = 0;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 2) {
+        audio_turning_right.play();
+        talk("I am turning right now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleadd(90,goforwardtointersection3_yunbotstate1) }, 10);
+        },2000)
+        yunbotstate = 1;
+        yunbotatanintersection4 = 1;
+        yunbotatanintersection2 = 0;
+      }
+    }
+    else if (inputdom == "turn left" || inputdom == "make left turn") { //車在第一個入口往圖書館
+      if (yunbotatanintersection1 == 1 && yunbotstate == 0) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop = setInterval(function () { yunbot_angleless(90,turnlefttolibrary_yunbotstate1) }, 10);
+        },2000)
+        
+        yunbotstate = 1;
+        yunbotatlibrary = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 3) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtoschool_yunbotstate0) }, 10);
+        },2000)
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,turnlefttolibrary_yunbotstate3) }, 10);
+        },2000)
+        yunbotstate = 3;
+        yunbotatlibrary = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 0) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtointersection3_yunbotstate1) }, 10)
+        },2000)
+        yunbotstate = 1;
+        yunbotatanintersection4 = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 1) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,turnrighttointersection3_yunbotstate2) }, 10);
+        },2000)
+        yunbotstate = 2;
+        yunbotatanintersection3 = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 3) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtointersection2_yunbotstate0) }, 10);
+        },2000)
+        yunbotstate = 0;
+        yunbotatanintersection2 = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 1) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,turnlefttopool_yunbotstate0x1) }, 10);
+        },2000)
+        yunbotstate = 0;
+        yunbotatanintersection3 = 0;
+        yunbotatpool = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,turnrighttointersection4_yunbotstate0)}, 10);
+        },2000)
+        yunbotstate = 0;
+        yunbotatanintersection4 = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 0) {
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop= setInterval(function () { yunbot_angleless(90,goforwardtosupermarket_yunbotstate1) }, 10);
+        },2000)
+        yunbotstate = 1;
+        yunbotatsupermarket = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 0) {   //車在第三個入口往泳池走
+        audio_turning_left.play();
+        talk("I am turning left now")
+        setTimeout(function() {
+          yunbotstateloop=setInterval(function () { yunbot_angleless(90,goforwardtopool_yunbotstate2y) }, 10);
+        },2000)
+        yunbotstate = 2;
+        yunbotatpool = 1;
+        yunbotatanintersection3 = 0;
+      }
+
+    }
+    else if (inputdom == "go to the school") { //車在第一個入口往圖書館
+      if (yunbotatanintersection2 == 1 && yunbotstate == 0) {
+        callgoforwardtoschool_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 1) {
+        callgoforwardtoschool_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 2) {
+        callgoforwardtoschool_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 3) {
+        callgoforwardtoschool_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatfirst == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgoforwardtoschool_yunbotstate0,2000)
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatfirst = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgoforwardtoschool_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgoforwardtoschool_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgoforwardtoschool_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection3_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection3_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection3_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection3_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection4_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection4_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection4_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgototheschoolatanintersection4_yunbotstate0()
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgototheschoolatthelibrary_yunbotstate1,2000)
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatlibrary = 0;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgototheschoolatthelibrary_yunbotstate3,2000 )
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatlibrary = 0;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgototheschoolatthepool_yunbotstate2,2000 )
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatpool = 0;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgototheschoolatthepool_yunbotstate0,2000 )
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatpool = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgototheschoolatthepark_yunbotstate1,2000 )
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatpark = 0;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgoforwardtoschool_yunbotstate2,2000 )
+        yunbotstate = 2;
+        yunbotatschool = 1;
+        yunbotatpark = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        window.setTimeout(callgototheschoolatthesupermarket_yunbotstate1,2000 )
+        yunbotstate = 2;
+        yunbotatschool = 1;
+        yunbotatsupermarket = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_go_school.play()
+        talk("I am going to the school")
+        setTimeout(function() {
+          yunbotstateloop = setInterval(function () { gototheschoolatthepark_yunbotstate1y2() }, 10);
+        },2000)
+        yunbotstate = 0;
+        yunbotatschool = 1;
+        yunbotatsupermarket = 0;
+      }
+
+    }
+    else if (inputdom == "go to the park") { //車在第一個入口往圖書館
+      if (yunbotatschool == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_go_park.play()
+        talk("I am going to the park")
+        window.setTimeout(callgoforwardtopark_yunbotstate1,2000)
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatschool = 0;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        audio_go_park.play()
+        talk("I am going to the park")
+        window.setTimeout(callgototheparkattheschool_yunbotstate2,2000)
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatschool = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgoforwardtopark_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgoforwardtopark_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgoforwardtopark_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgoforwardtopark_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection2 = 0;
+      }
+      else if (yunbotatfirst == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_go_park.play()
+        talk("I am going to the park")
+        window.setTimeout(callgoforwardtopark_yunbotstate1,2000)
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatfirst = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgoforwardtopark_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgoforwardtopark_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgoforwardtopark_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection1 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection3 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection4_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection4_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection4_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgototheparkatanintersection4_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatanintersection4 = 0;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        audio_go_park.play()
+        talk("I am going to the park")
+        window.setTimeout(callgototheparkatthelibrary_yunbotstate1,2000)
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatlibrary = 0;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_go_park.play()
+        talk("I am going to the park")
+        window.setTimeout(callgototheparkatthelibrary_yunbotstate3,2000)
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatlibrary = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 1) {
+        audio_go_park.play()
+        talk("I am going to the park")
+        action = window.setTimeout(callgoforwardtopark_yunbotstate3,2000 )
+        yunbotstate = 3;
+        yunbotatpark = 1;
+        yunbotatsupermarket = 0;
+      }
+      else if (yunbotatsupermarket == 1 && yunbotstate == 3) {
+        audio_go_park.play()
+        talk("I am going to the park")
+        action = window.setTimeout(callgototheparkatthesupermarket_yunbotstate3,2000 )
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatsupermarket = 0;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 2) {
+        audio_go_park.play()
+        talk("I am going to the park")
+        action = window.setTimeout(callgototheparkatthepool_yunbotstate2,2000 )
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatpool = 0;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 0) {
+        audio_go_park.play()
+        talk("I am going to the park")
+        action = window.setTimeout(callgototheparkatthepool_yunbotstate0,2000 )
+        yunbotstate = 1;
+        yunbotatpark = 1;
+        yunbotatpool = 0;
+      }
+    }
+    else if (inputdom == "go to the supermarket") { //車在第一個入口往圖書館
+      
+      if (yunbotatfirst == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play();
+        talk("I am going to the supermarket")
+        window.setTimeout(callgotothesupermarketatfirst_yunbotstate1,2000)
+        yunbotstate = 1;
+        yunbotatfirst = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgotothesupermarketatfirst_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection1 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgotothesupermarketatfirst_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection1 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection1 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgotothesupermarketatfirst_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection1 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgotothesupermarketatfirst_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection2 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgotothesupermarketatfirst_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection2 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgotothesupermarketatfirst_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection2 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection2 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgotothesupermarketatfirst_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection2 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgotothesupermarketatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection3 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgotothesupermarketatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection3 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgotothesupermarketatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection3 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection3 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgotothesupermarketatanintersection3_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection3 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        callgoforwardtosupermarket_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection4 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        callgoforwardtosupermarket_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection4 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        callgoforwardtosupermarket_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection4 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatanintersection4 == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        callgoforwardtosupermarket_yunbotstate1()
+        yunbotstate = 1;
+        yunbotatanintersection4 = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play()
+        talk("I am going to the supermarket")
+        window.setTimeout(callgotothesupermarketatthelibrary_yunbotstate1,2000)
+        yunbotstate = 1;
+        yunbotatlibrary = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatlibrary == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play()
+        talk("I am going to the supermarket")
+        window.setTimeout(callgotothesupermarketatthelibrary_yunbotstate3,2000)
+        yunbotstate = 1;
+        yunbotatlibrary = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play()
+        talk("I am going to the supermarket")
+        window.setTimeout(callgoforwardtointersection3_yunbotstate0,2000)
+        yunbotstate = 1;
+        yunbotatpool = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatpool == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play()
+        talk("I am going to the supermarket")
+        window.setTimeout(callgotothesupermarketatthepool_yunbotstate0,2000)
+        yunbotstate = 1;
+        yunbotatpool = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 0) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play()
+        talk("I am going to the supermarket")
+        window.setTimeout(callgotothesupermarketattheschool_yunbotstate0,2000)
+        yunbotstate = 3;
+        yunbotatschool = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatschool == 1 && yunbotstate == 2) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play()
+        talk("I am going to the supermarket")
+        window.setTimeout(callgotothesupermarketattheschool_yunbotstate2,2000)
+        yunbotstate = 1;
+        yunbotatschool = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 1) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play();
+        talk("I am going to the supermarket")
+        window.setTimeout(callgoforwardtosupermarket_yunbotstate3,2000 )
+        yunbotstate = 3;
+        yunbotatpark = 0;
+        yunbotatsupermarket = 1;
+      }
+      else if (yunbotatpark == 1 && yunbotstate == 3) {   //車在泳池往第三個入口走
+        audio_go_supermarket.play();
+        talk("I am going to the supermarket")
+        window.setTimeout(callgotothesupermarketatthepark_yunbotstate3,2000 )
+        yunbotstate = 1;
+        yunbotatpark = 0;
+        yunbotatsupermarket = 1;
+      }
+    }
+  }
+  function yunbot_angleless(a,b){
+        angle-=1
+        anglenumber+=1
+      $("#yunbotcar").rotate(angle);
+    if (anglenumber == a) {
+      clearInterval(yunbotstateloop);
+      anglenumber=0
+      if(angle == -360)
+      {
+        angle=0
+        console.log(angle)
+      }
+      audio_going_forward.play()
+      talk("I am going forward now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { b() }, 10);
+        },2000)
+    }
+        }
+  function yunbot_angleadd(a,b){
+        angle+=1
+        anglenumber+=1
+      $("#yunbotcar").rotate(angle);
+    if (anglenumber == a) {
+      anglenumber=0
+      clearInterval(yunbotstateloop);
+      if(angle == 360)
+      {
+        angle=0
+        console.log(angle)
+      }
+      audio_going_forward.play()
+      talk("I am going forward now")
+      setTimeout(function() {
+        yunbotstateloop = setInterval(function () { b() }, 10);
+        },2000)
+    }
+        }
+    function leave(){
+      socket.emit('uidstatus_no_use', {
+            'uidstatus_no_use': user
+          });
+        }
+    function talk(a){
+      let Today=new Date()
+      $('#ID').append(`<div class="bot"><span>[${Today.getFullYear()}-${Today.getMonth()+1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}] Yunbot:${a}</span></div>`)
+    }
+ 
+  socket.on('uid', function(data) {
+    document.getElementById("display").innerText = data.uid+"您好"
+    user=data.uid
+      });
+      setTimeout(function() {
+      socket.on(user, function(data) {
+        console.log(data.data);
+        document.getElementById("questionid").value=data.data
+         question()
+      });
+    },500)     
+   function select(location){
+    document.getElementById("questionid").value=location.value
+    question()
+   }
+  </script>
+  <link rel="stylesheet" href="/stylesheets/yunbotmapstyle.css" />
+  <body onunload="leave()" >
+    <div>
+      <img class="map" src="/images/map1.jpg">
+      <img class="mapmove" id="yunbotcar" src="/images/yunbot.png">
+    </div>
+    <div>
+      <input class="mapmovetalk" id="questionid" onchange="question()" value="" />
+      <span class="mapmovedisplay" id="display">雲林科技大學</span>
+      <button class="mapmoverecord" onclick="leave()">離開</button>
+      <div id="ID" class="talkroom">
+      </div>
+      <table class="locationselect" border="0">
+        　<tr>
+        　<td><button class="locationselectbutton" onclick="select(this)" value="turn right">turn right</button></td>
+        　<td><button class="locationselectbutton" onclick="select(this)" value="turn left">turn left</button></td>
+          <td><button class="locationselectbutton" onclick="select(this)" value="go forward">go forward</button></td>
+        　</tr>
+        　<tr>
+        　<td><button class="locationselectbutton" onclick="select(this)" value="go to the library">library</button></td>
+        　<td><button class="locationselectbutton" onclick="select(this)" value="go to the pool">pool</button></td>
+        　<td><button class="locationselectbutton" onclick="select(this)" value="go to the supermarket">supermarket</button></td>
+        　</tr>
+        <tr>
+          　<td><button class="locationselectbutton" onclick="select(this)" value="go to the school">school</button></td>
+          　<td><button class="locationselectbutton" onclick="select(this)" value="go to the park">park</button></td>
+          </tr>
+        </table>
+    </div>
+  </body>
+</html>

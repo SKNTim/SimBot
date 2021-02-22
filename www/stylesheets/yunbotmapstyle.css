@@ -1,0 +1,85 @@
+body{
+    margin: 0; 
+    padding: 0;
+    height: 100%;
+    width:100%;
+    border:none;
+}
+.map{
+    position:absolute;
+    max-height:80vh;
+    min-height:80vh;
+    max-width: 75%;
+    min-width: 75%;
+    z-index:1;
+}
+.mapmove{
+    position:absolute;
+    top:64vh;
+    left:8vh;
+    width:6.5%;
+    height:10%;
+    z-index:2;
+}
+.mapmovetalk{
+    position:absolute;
+    top:2%;
+    right:9%;
+    max-height:3vh;
+    min-height:3vh;
+    max-width:15%;
+    min-width:15%;
+}
+.mapmovedisplay{
+    position:absolute;
+    top:10%;
+    right:9%;
+    max-height:3vh;
+    min-height:3vh;
+    max-width:15%;
+    min-width:15%;
+    font-family:fantasy;
+    font-size:3vh;   
+}
+.mapmoverecord{
+    position:absolute;
+    top:20%;
+    right:9%;
+    max-height:5vh;
+    min-height:5vh;
+    max-width:15%;
+    min-width:15%;
+    font-family:fantasy;
+    font-size:3vh;  
+}
+.talkroom{
+    position:absolute;
+    top:30%;
+    right:4%;
+    max-height:40vh;
+    min-height:40vh;
+    max-width:20%;
+    min-width:20%;
+    font-family:fantasy;
+    font-size:2vh;
+    overflow:auto;  
+}
+.locationselect {
+    position:absolute;
+    top:70%;
+    right:8%;
+    max-height:15%;
+    min-height:15%;
+    max-width:17%;
+    min-width:17%;
+   
+}
+.locationselectbutton{
+    font-size:2vh;
+}
+.yun{
+    color: red;
+}
+.bot{
+    color:blue;
+}

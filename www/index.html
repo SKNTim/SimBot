@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    
+  </head>
+  
+    <script>
+      var socket = io.connect();
+
+      socket.on('uid', function(data) {
+        $('#user').html('')
+        setTimeout(function() {
+          $('#user').append(`<option>${data.uid}</option>`);
+        },5)
+      });
+      function uidselect(){
+          socket.emit('uidstatus_no_use', {
+            'uidstatus_no_use': document.getElementById("user").value
+          });
+          console.log(document.getElementById("user").value);
+          window.location.href='http://127.0.0.1:3000/master.html';
+        }
+      function myFunction() {
+        socket.emit('client', {
+            'uid': "AAA"
+          });
+      }
+    
+
+
+        
+    </script>
+    <body  onbeforeunload="myFunction()">
+    <select id="user"></select>
+    <button onclick="uidselect()">確認</button>
+  </body>
+</html>

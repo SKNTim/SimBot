@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <script>
+      var socket = io.connect();
+
+      socket.on('uid', function(data) {
+        $('#user').html('')
+        setTimeout(function() {
+          $('#user').append(`<option>${data.uid}</option>`);
+        },5)
+      });
+      function uidselect(){
+          socket.emit('client_data', {
+            'uid': document.getElementById("user").value
+          });
+          console.log(document.getElementById("user").value);
+          window.location.href='http://127.0.0.1:8001/master.html';
+        }
+    </script>
+    <select id="user"></select>
+    <button onclick="uidselect()">確認</button>
+  </body>
+</html>
